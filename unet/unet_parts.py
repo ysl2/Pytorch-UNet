@@ -22,6 +22,10 @@ class DoubleConv(nn.Module):
         )
 
     def forward(self, x):
+        # for layer in self.double_conv:
+            # x = layer(x)
+            # print(layer.__class__.__name__, 'Output shape: ', x.shape)
+        # return x
         return self.double_conv(x)
 
 
@@ -36,6 +40,10 @@ class Down(nn.Module):
         )
 
     def forward(self, x):
+        # for layer in self.maxpool_conv:
+            # x = layer(x)
+            # print(layer.__class__.__name__, 'Output shape: ', x.shape)
+        # return x
         return self.maxpool_conv(x)
 
 
@@ -55,6 +63,11 @@ class Up(nn.Module):
 
     def forward(self, x1, x2):
         x1 = self.up(x1)
+        # NOTE:
+        # nn.maxpool2d(2) work on tensor which height or weight can not divisible by 2 will generate error when use skip-connection
+        # It seems to expand the size of x1 to the size of x2, the smaller one the bigger one and the concatennate together. However, the original paper U-net concatenate the smaller one
+        # This because the original paper encourage down-sampling without padding the same as the up-sampling without zero-padding, which can avoid corrupting semantic information. This is the one of the reason for which the overlap-tile strategy was proposed
+
         # input is CHW
         diffY = x2.size()[2] - x1.size()[2]
         diffX = x2.size()[3] - x1.size()[3]
